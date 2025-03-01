@@ -1,14 +1,14 @@
-import { useState } from 'react';
-import { InputField } from './stylized_components/stylizedComponents';
-import { Button, Input } from 'antd';
-import { useTaskListStore } from './store';
+import { useState } from 'react'
+import { InputField } from './stylized_components/stylizedComponents'
+import { Button, Input } from 'antd'
+import { useTaskListStore } from './store'
 
 const TaskAdder = () => {
-  const { tasksList, addNewTask } = useTaskListStore(state => state);
-  const [newTask, setNewTask] = useState('');
+  const { tasksList, addNewTask } = useTaskListStore((state) => state)
+  const [newTask, setNewTask] = useState('')
   const sendNewTask = () => {
-    const postDate = new Date();
-    const taskId = tasksList[0].id++;
+    const postDate = new Date()
+    const taskId = tasksList[0].id++
     const task = [
       {
         id: taskId,
@@ -22,32 +22,32 @@ const TaskAdder = () => {
           updatedAt: postDate.toISOString(),
         },
       },
-    ];
+    ]
 
-    addNewTask(task);
+    addNewTask(task)
 
-    setNewTask('');
-  };
+    setNewTask('')
+  }
   return (
-    <InputField title='Добавить задачу'>
+    <InputField title="Добавить задачу">
       <Input
-        placeholder='Some kind of task'
+        placeholder="Что нам нужно сделать?"
         value={newTask}
-        onChange={e => {
-          setNewTask(e.target.value);
+        onChange={(e) => {
+          setNewTask(e.target.value)
         }}
       />
       <Button
-        type='primary'
-        size='large'
+        type="primary"
+        size="large"
         onClick={() => {
-          sendNewTask();
+          sendNewTask()
         }}
       >
-        Add task
+        Добавить задачу
       </Button>
     </InputField>
-  );
-};
+  )
+}
 
-export default TaskAdder;
+export default TaskAdder

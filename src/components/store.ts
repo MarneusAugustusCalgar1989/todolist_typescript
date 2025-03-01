@@ -1,55 +1,58 @@
-import { create } from 'zustand';
+import { create } from 'zustand'
 
 export type task = {
-  id: number;
+  id: number
   attributes: {
-    createdAt: string;
-    description: string;
-    publishedAt: string;
-    status: string;
-    isFavorite: boolean;
-    title: string;
-    updatedAt: string;
-  };
-};
+    createdAt: string
+    description: string
+    publishedAt: string
+    status: string
+    isFavorite: boolean
+    title: string
+    updatedAt: string
+  }
+}
 export type attributes = {
-  createdAt: string;
-  description: string;
-  publishedAt: string;
-  status: string;
-  isFavorite: boolean;
-  title: string;
-  updatedAt: string;
-};
+  createdAt: string
+  description: string
+  publishedAt: string
+  status: string
+  isFavorite: boolean
+  title: string
+  updatedAt: string
+}
 
 interface taskListStore {
-  tasksList: task[] | [];
-  task: task;
-  filter: string;
+  tasksList: task[] | []
+  task: task
+  filter: string
+  page: number
+  turnPage: () => void
 
-  getTasksFromServer: (url: string) => void;
-  addNewTask: (newTask: any) => void;
-  changeTaskStatus: (taskId: number, taskStatus: string) => void;
-  setTasksList: (newTasksList: task[]) => void;
-  setFilter: (filter: string) => void;
+  // getTasksFromServer: (url: string) => void
+  getTasks: (tasks: task[]) => void
+  addNewTask: (newTask: any) => void
+  changeTaskStatus: (taskId: number, taskStatus: string) => void
+  setTasksList: (newTasksList: task[]) => void
+  setFilter: (filter: string) => void
 }
 
 export interface TodoProps {
   el: {
-    id: number;
+    id: number
     attributes: {
-      createdAt: string;
-      description: string;
-      publishedAt: string;
-      status: string;
-      isFavorite: boolean;
-      title: string;
-      updatedAt: string;
-    };
-  };
+      createdAt: string
+      description: string
+      publishedAt: string
+      status: string
+      isFavorite: boolean
+      title: string
+      updatedAt: string
+    }
+  }
 }
 
-export const useTaskListStore = create<taskListStore>(set => ({
+export const useTaskListStore = create<taskListStore>((set) => ({
   task: {
     id: 0,
     attributes: {
@@ -66,43 +69,23 @@ export const useTaskListStore = create<taskListStore>(set => ({
   tasksList: [],
 
   filter: '',
+  page: 1,
+  turnPage: () => set((state) => ({ page: state.page + 1 })),
 
-  getTasksFromServer: async (url: string) => {
-    if (localStorage.getItem('favoriteList')) {
-      const favoriteDataJson: any = localStorage.getItem('favoriteList');
-      const favoriteData = JSON.parse(favoriteDataJson);
-      set((state: any) => {
-        return (state.tasksList = favoriteData.sort(
-          (a: task, b: task) => b.id - a.id
-        ));
-      });
-    }
-    try {
-      let response = await fetch(url);
-      if (response.ok) {
-        let json = await response.json();
-        set((state: any) => {
-          return (state.tasksList = json.data.sort(
-            (a: task, b: task) => b.id - a.id
-          ));
-        });
-      } else {
-        set(state => ({ tasksList: [] }));
-      }
-    } catch (error) {
-      console.error('Ошибка при загрузке ', error);
-    }
-  },
+  getTasks: (tasks: task[]) =>
+    set((state: any) => ({
+      tasksList: [...state.tasksList, ...tasks],
+    })),
 
-  setTasksList: newTasksList => set(state => ({ tasksList: newTasksList })),
+  setTasksList: (newTasksList) => set((state) => ({ tasksList: newTasksList })),
   changeTaskStatus: (taskId, taskStatus) =>
     set((state: any) => {
-      const found = state.tasksList.find((el: task) => el.id === taskId);
-      found.attributes.status = taskStatus;
-      return state.tasksList;
+      const found = state.tasksList.find((el: task) => el.id === taskId)
+      found.attributes.status = taskStatus
+      return state.tasksList
     }),
   setFilter: (filter: string) => set((state: any) => ({ filter: filter })),
 
-  addNewTask: newTask =>
-    set(state => ({ tasksList: [...state.tasksList, ...newTask] })),
-}));
+  addNewTask: (newTask) =>
+    set((state) => ({ tasksList: [...state.tasksList, ...newTask] })),
+}))
